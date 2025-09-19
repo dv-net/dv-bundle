@@ -1,0 +1,79 @@
+services:
+  postgres-db:
+    image: "postgres:latest"
+    container_name: dv-postgres-database
+    restart: always
+    network_mode: host
+    environment:
+      - POSTGRES_USER=${POSTGRES_ROOT_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_ROOT_PASSWORD}
+      - MERCHANT_DB=${MERCHANT_DB}
+      - MERCHANT_USER=${MERCHANT_USER}
+      - MERCHANT_PASSWORD=${MERCHANT_PASSWORD}
+      - PROCESSING_DB=${PROCESSING_DB}
+      - PROCESSING_USER=${PROCESSING_USER}
+      - PROCESSING_PASSWORD=${PROCESSING_PASSWORD}
+    ports:
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+    command: [ "postgres", "-c", "log_statement=all", "-c", "max_connections=300" ]
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+      - ./scripts/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh:ro
+
+  redis-db:
+    image: "redis:latest"
+    container_name: dv-redis-database
+    restart: always
+    network_mode: host
+    environment:
+      - REDIS_USER=${REDIS__USERNAME}
+      - REDIS_PASSWORD=${REDIS__PASSWORD}
+      - REDIS_DB=${REDIS__DATABASE_NAME}
+    ports:
+      - "${REDIS__PORT}:${REDIS__PORT}"
+
+  dv-merchant:
+    build:
+      context: ./services/dv-merchant
+      dockerfile: Dockerfile
+    container_name: dv-merchant
+    restart: always
+    network_mode: host
+    depends_on:
+      - postgres-db
+      - redis-db
+      - dv-processing
+    environment:
+      - DATABASE_HOST=127.0.0.1
+      - DATABASE_PORT=${POSTGRES_PORT}
+      - DATABASE_USER=${MERCHANT_USER}
+      - DATABASE_PASSWORD=${MERCHANT_PASSWORD}
+      - DATABASE_NAME=${MERCHANT_DB}
+      - REDIS_HOST=127.0.0.1
+      - REDIS_PORT=${REDIS__PORT}
+      - REDIS_PASSWORD=${REDIS__PASSWORD}
+    volumes:
+      - ./scripts/init-dv-merchant.sh:/app/start.sh:ro
+    ports:
+      - "80:80"
+
+  dv-processing:
+    build:
+      context: ./services/dv-processing
+      dockerfile: Dockerfile
+    container_name: dv-processing
+    restart: always
+    network_mode: host
+    depends_on:
+      - postgres-db
+    environment:
+      - DATABASE_HOST=127.0.0.1
+      - DATABASE_PORT=${POSTGRES_PORT}
+      - DATABASE_USER=${PROCESSING_USER}
+      - DATABASE_PASSWORD=${PROCESSING_PASSWORD}
+      - DATABASE_NAME=${PROCESSING_DB}
+    volumes:
+      - ./scripts/init-dv-processing.sh:/app/start.sh:ro
+    ports:
+      - "9000:9000"
+

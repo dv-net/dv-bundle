@@ -1,0 +1,6 @@
+[submodule "services/dv-merchant"]
+	path = services/dv-merchant
+	url = git@github-dv:dv-net/dv-merchant.git
+[submodule "services/dv-processing"]
+	path = services/dv-processing
+	url = git@github-dv:dv-net/dv-processing.git
