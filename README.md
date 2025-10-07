@@ -19,7 +19,7 @@ This repository contains two powerful submodules working in harmony:
 git clone --recursive https://github.com/dv-net/dv-bundle.git
 cd dv-bundle
 cp .env.example .env  # Customize your environment variables
-docker-compose up -d
+docker compose up -d
 ```
 
 **That's it!** Your application is now running at `http://localhost:80` 🎉
