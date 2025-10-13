@@ -45,7 +45,7 @@ docker compose up -d
 git submodule update --remote
 
 # Rebuild and restart
-docker-compose up --build
+docker compose up --build
 ```
 
 ## 🐛 Troubleshooting
