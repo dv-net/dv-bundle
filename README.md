@@ -57,7 +57,7 @@ git submodule update --init --recursive
 
 **Docker issues?**
 ```bash
-docker compose down && docker compose up --build
+docker compose down && docker compose up -d --build
 ```
 
 ## 📄 License
