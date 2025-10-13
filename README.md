@@ -24,6 +24,9 @@ docker compose up -d
 
 **That's it!** Your application is now running at `http://localhost:80` 🎉
 
+> 💡 Tip 
+> If you using Docker Desktop on Windows or MacOS, you should check `Enable host networking` at Settings -> Resources -> Network section 
+
 ## 🏗️ Architecture
 
 ```
